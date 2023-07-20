@@ -20,20 +20,9 @@ import pandas as pd
 # st.text(f'hello {st.session_state.name}')
 
 
-# vn_provinces = pd.read_html('https://www.latlong.net/category/cities-243-15.html')
-# vn_provinces = vn_provinces[0]
-# vn_provinces.rename(columns={'Latitude':'lat', 'Longitude':'lon'}, inplace=True)
-# st.dataframe(vn_provinces)
-# st.map(vn_provinces[['lat', 'lon']])
+vn_provinces = pd.read_html('https://www.latlong.net/category/cities-243-15.html')
+vn_provinces = vn_provinces[0]
+vn_provinces.rename(columns={'Latitude':'lat', 'Longitude':'lon'}, inplace=True)
+st.dataframe(vn_provinces)
+st.map(vn_provinces[['lat', 'lon']])
 
-import streamlit as st
-import pandas as pd
-
-# Highlight specific provinces
-highlighted_provinces = ['Hanoi', 'Ho Chi Minh City', 'Da Nang']
-
-# Create a DataFrame with province names and default latitude values
-df = pd.DataFrame({'province': highlighted_provinces, 'latitude': [0]*len(highlighted_provinces)})
-
-# Plot the map with highlighted provinces
-st.map(df, zoom=6, use_container_width=True, color='red')
