@@ -1,7 +1,7 @@
 ds_prj_template
 ==============================
 
-just a project template to test a new way of organizing my dadatascience project
+>>>>
 
 Project Organization
 ------------
