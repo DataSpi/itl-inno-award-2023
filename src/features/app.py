@@ -7,7 +7,7 @@ import os
 import streamlit as st
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader, PdfFileReader
-import PyPDF2
+# import PyPDF2
 from langchain.document_loaders.csv_loader import CSVLoader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import HuggingFaceInstructEmbeddings
@@ -111,34 +111,34 @@ def get_vectorstore(text_chunks):
 # %cd "/Users/spinokiem/Documents/Spino_DS_prj/building_a_chatbot"
 # # test_pdf=PdfFileReader("data/raw/bọn trẻ bây giờ sướng thế, sao cứ trầm cảm nhỉ.pdf")
 # # test_text=test_pdf.getPage(0).extract_text()
-# test_text = open('data/raw/quy-dinh-tai-noi-lam-viec.txt', 'r').read()
-# test_text_chunks=get_text_chunks(test_text)
-# for i in range(0,5):
-#     print('---')
-#     print(test_text_chunks[i]) # now I know how the get_text_chunk() works
+test_text = open('../../data/raw/quy-dinh-tai-noi-lam-viec.txt', 'r').read()
+test_text_chunks=get_text_chunks(test_text)
+for i in range(0,3):
+    print('---')
+    print(test_text_chunks[i]) # now I know how the get_text_chunk() works
 
 
 # excel_file_path='data/raw/itl-testing.xlsx'
-# csv_file_path='data/processed/itl-testing.csv'
+csv_file_path='../../data/processed/itl-testing.csv'
 # # Convert Excel to CSV
 # df = pd.read_excel(excel_file_path)
 # df.to_csv(csv_file_path, index=False) # oke, so by converting file like this I can work w utf-8 of vnese. & can change modify it as well. 
 
-# loader=CSVLoader(file_path=csv_file_path)
-# documents=loader.load()
-# text=[i.page_content for i in documents]
-# for i in range(0,3):
-#     print('---')
-#     print(text[i])
+loader=CSVLoader(file_path=csv_file_path)
+documents=loader.load()
+text=[i.page_content for i in documents]
+for i in range(0,3):
+    print('---')
+    print(text[i])
 # %cd "/Users/spinokiem/Documents/Spino_DS_prj/building_a_chatbot/src/features"
 
 
-# test_vectorstore=get_vectorstore(test_text_chunks)
-# query="ripped pants"
-# page_array=test_vectorstore.similarity_search(query=query, k=3)
-# for page in page_array:
-#     print('---')
-#     print(page.page_content)
+test_vectorstore=get_vectorstore(test_text_chunks)
+query="ripped pants"
+page_array=test_vectorstore.similarity_search(query=query, k=3)
+for page in page_array:
+    print('---')
+    print(page.page_content)
 
 # from datasets import load_dataset
 
