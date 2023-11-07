@@ -1,3 +1,7 @@
+""" 
+This file convert a .docx file to a .xlsx with file name, heading 1,2,3 as metadata. 
+"""
+
 import langchain.text_splitter as ts
 from langchain.document_loaders import Docx2txtLoader
 import re
@@ -36,7 +40,7 @@ df.loc[h3_rows, 'h3'] = df.loc[h3_rows, 'text']
 # df.query('style_.str.contains("Heading")') # seeing the df
 
 
-# >>> ffill() for fill down the data (rows that do not have data will be filled by the value of the row above it.)
+# ffill() for fill down the data (rows that do not have data will be filled by the value of the row above it.)
 df.h1.ffill(inplace=True)
 df.h2=df.groupby('h1')['h2'].transform(lambda x: x.ffill())
 df.h3=df.groupby(['h1', 'h2'])['h3'].transform(lambda x: x.ffill())

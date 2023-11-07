@@ -18,8 +18,6 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 from langchain.llms import HuggingFaceHub
-import tiktoken
-import urllib3
 
 # urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -84,7 +82,6 @@ def get_text(files):
     return text
 
 
-
 def get_text_chunks(text):
     text_splitter = CharacterTextSplitter(
         separator="\n",
@@ -105,47 +102,6 @@ def get_vectorstore(text_chunks):
     # embeddings = HuggingFaceInstructEmbeddings(model_name="shalomma/llama-7b-embeddings") # actually, it's hard to find an embedding model, so I think hkunlp/instructor-xl is a good one
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
-
-# -----------------------------------Test-----------------------------------
-# # read the pdf & try to see how the get_pdf_text() & get_text_chunk() work. 
-# %cd "/Users/spinokiem/Documents/Spino_DS_prj/building_a_chatbot"
-# # test_pdf=PdfFileReader("data/raw/bọn trẻ bây giờ sướng thế, sao cứ trầm cảm nhỉ.pdf")
-# # test_text=test_pdf.getPage(0).extract_text()
-test_text = open('../../data/raw/quy-dinh-tai-noi-lam-viec.txt', 'r').read()
-test_text_chunks=get_text_chunks(test_text)
-for i in range(0,3):
-    print('---')
-    print(test_text_chunks[i]) # now I know how the get_text_chunk() works
-
-
-# excel_file_path='data/raw/itl-testing.xlsx'
-csv_file_path='../../data/processed/itl-testing.csv'
-# # Convert Excel to CSV
-# df = pd.read_excel(excel_file_path)
-# df.to_csv(csv_file_path, index=False) # oke, so by converting file like this I can work w utf-8 of vnese. & can change modify it as well. 
-
-loader=CSVLoader(file_path=csv_file_path)
-documents=loader.load()
-text=[i.page_content for i in documents]
-for i in range(0,3):
-    print('---')
-    print(text[i])
-# %cd "/Users/spinokiem/Documents/Spino_DS_prj/building_a_chatbot/src/features"
-
-
-test_vectorstore=get_vectorstore(test_text_chunks)
-query="ripped pants"
-page_array=test_vectorstore.similarity_search(query=query, k=3)
-for page in page_array:
-    print('---')
-    print(page.page_content)
-
-# from datasets import load_dataset
-
-# dataset = load_dataset("tinhpx2911/wiki-vn-process")
-# dataset['train']['text']
-
-# -----------------------------------End Test-----------------------------------
 
 
 # model_name="google/flan-t5-xxl" "PY007/TinyLlama-1.1B-step-50K-105b" "google/flan-t5-base"
@@ -216,3 +172,46 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+# # -----------------------------------Test-----------------------------------
+# # # read the pdf & try to see how the get_pdf_text() & get_text_chunk() work. 
+# # %cd "/Users/spinokiem/Documents/Spino_DS_prj/building_a_chatbot"
+# # # test_pdf=PdfFileReader("data/raw/bọn trẻ bây giờ sướng thế, sao cứ trầm cảm nhỉ.pdf")
+# # # test_text=test_pdf.getPage(0).extract_text()
+# test_text = open('../../data/raw/quy-dinh-tai-noi-lam-viec.txt', 'r').read()
+# test_text_chunks=get_text_chunks(test_text)
+# for i in range(0,3):
+#     print('---')
+#     print(test_text_chunks[i]) # now I know how the get_text_chunk() works
+
+
+# # excel_file_path='data/raw/itl-testing.xlsx'
+# csv_file_path='../../data/processed/itl-testing.csv'
+# # # Convert Excel to CSV
+# # df = pd.read_excel(excel_file_path)
+# # df.to_csv(csv_file_path, index=False) # oke, so by converting file like this I can work w utf-8 of vnese. & can change modify it as well. 
+
+# loader=CSVLoader(file_path=csv_file_path)
+# documents=loader.load()
+# text=[i.page_content for i in documents]
+# for i in range(0,3):
+#     print('---')
+#     print(text[i])
+# # %cd "/Users/spinokiem/Documents/Spino_DS_prj/building_a_chatbot/src/features"
+
+
+# test_vectorstore=get_vectorstore(test_text_chunks)
+# query="ripped pants"
+# page_array=test_vectorstore.similarity_search(query=query, k=3)
+# for page in page_array:
+#     print('---')
+#     print(page.page_content)
+
+# # from datasets import load_dataset
+
+# # dataset = load_dataset("tinhpx2911/wiki-vn-process")
+# # dataset['train']['text']
+
+# # -----------------------------------End Test-----------------------------------
+
