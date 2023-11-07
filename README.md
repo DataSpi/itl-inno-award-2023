@@ -20,5 +20,13 @@ The technique used to built this AI Assistant can be simplify into the following
 
 ![Alt text](figures/overall-flow.png)
 
+## Ingestion 
+
+> More information will be update later
+
+## Processing
+
+> More information will be update later
+
 --------
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
