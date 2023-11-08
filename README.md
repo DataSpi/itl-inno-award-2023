@@ -5,7 +5,13 @@ Builing an Internal AI Assistant
 
 The project aims to leverage the natural language processing capabilities of Large Language Models (LLM) by providing them with additional information about the specific domains we want to exploit.
 
-In this case, the project is specifically focused on building a Company Internal AI Assistant that possesses the ability to answer questions about the company's policies and business knowledge. The Assistant would be able to help employees easily research internal textual information using natural language. This would result in:
+In this case, the project is specifically focused on building a Company Internal AI Assistant that possesses the ability to answer questions about the company's policies and business knowledge.
+
+<div style="text-align: center;">
+  <img src="figures/helpful-ai-assistant.jpeg" alt="Helpful AI Assistant" style="width: 350px;">
+</div>
+
+The AI Assistant would be able to help employees easily research internal textual information using natural language. This would result in:
 
 1. Better familiarization with the vast corpus of information within a large company for new and junior employees
 2. Lowering the burden of continuously answering repetitive questions for senior employees, making the process of training their successors more efficient.
@@ -20,7 +26,7 @@ The technique used to built this AI Assistant can be simplify into the following
 
 ![Alt text](figures/overall-flow.png)
 
-## Ingestion 
+## Ingestion
 
 > More information will be update later
 
