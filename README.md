@@ -43,13 +43,11 @@ The technique used to build this AI Assistant can be simplify into the following
     │   ├── processed      <- The final, canonical data sets for modeling.
     │   └── raw            <- The original, immutable data dump.
     │
-    ├── docs               <- Contains a .excalidraw file for visualizing processes, creating 
-    │                         figures used for documenting the project.
+    ├── docs               <- Contains a .excalidraw file for visualizing processes, creating figures used for documenting the project.
     │
     ├── notebooks          <- Jupyter notebooks: mostly for testing purposes before writing src code.
     │
-    ├── requirements.txt   <- The requirements file for reproducing the python environment.
-    │                         Generated with `pip freeze > requirements.txt`
+    ├── requirements.txt   <- The requirements file for reproducing the python environment. Generated with `pip freeze > requirements.txt`
     │
     └── src                <- Source code for use in this project.
         ├── __init__.py    <- Makes src a Python module
@@ -63,6 +61,10 @@ The technique used to build this AI Assistant can be simplify into the following
             ├── app.py:                   Creating a web app using Streamlit
             ├── htmlTemplates.py:         The html_templates for Q&A interface in app.py
             └── models_testing.py:        Testing models on huggingface
+
+# Quick start
+
+> More information will be updated later  
 
 --------
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
