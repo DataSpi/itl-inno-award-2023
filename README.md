@@ -19,7 +19,7 @@ The AI Assistant would be able to help employees easily research internal textua
 
 # Technique
 
-The technique used to built this AI Assistant can be simplify into the following flowchart. The flowchart contains of 2 main phases:
+The technique used to build this AI Assistant can be simplify into the following flowchart. The flowchart contains of 2 main phases:
 
 1. Ingestion: Converting company textual information into embeded vector & storing in a vector database for querying later.
 2. Processing: Processing the users' question, using similarity search to retrieve relevant information from the vector database & then feed it to LLMs to get the final answer.
@@ -28,11 +28,38 @@ The technique used to built this AI Assistant can be simplify into the following
 
 ## Ingestion
 
-> More information will be update later
+> More information will be updated later
 
 ## Processing
 
-> More information will be update later
+> More information will be updated later
+
+# Project Organization
+
+    ├── README.md          <- The top-level README for developers using this project.
+    ├── data
+    │   ├── external       <- Data from third party sources.
+    │   ├── interim        <- Intermediate data that has been transformed.
+    │   ├── processed      <- The final, canonical data sets for modeling.
+    │   └── raw            <- The original, immutable data dump.
+    │
+    ├── docs               <- A default Sphinx project; see sphinx-doc.org for details
+    │
+    ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
+    │                         the creator's initials, and a short `-` delimited description, e.g.
+    │                         `1.0-jqp-initial-data-exploration`.
+    │
+    ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
+    │                         generated with `pip freeze > requirements.txt`
+    │
+    └── src                <- Source code for use in this project.
+        ├── __init__.py    <- Makes src a Python module
+        │
+        ├── data           <- Scripts to download or generate data
+        │   └── make_dataset.py
+        │
+        └── features       <- Scripts to turn raw data into features for modeling
+            └── build_features.py
 
 --------
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
