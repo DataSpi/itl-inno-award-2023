@@ -112,7 +112,7 @@ for message in st.session_state.messages:
 if "greeting_shown" not in st.session_state:
     st.session_state.greeting_shown = False
 
-# Random greeting message
+# Random greeting messages
 if not st.session_state.greeting_shown:
     st.session_state.greeting_shown = True
     with st.chat_message("assistant"):
@@ -143,7 +143,6 @@ if prompt := st.chat_input("Ask questions about ITL's policies"):
     # Display user message in chat message container
     with st.chat_message("user"):
         st.markdown(prompt)
-    
     
     # Display assistant response 
     with st.chat_message("assistant"):
