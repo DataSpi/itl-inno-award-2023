@@ -173,31 +173,30 @@ if user_ques := st.chat_input("Ask questions about ITL's policies"):
     with st.chat_message("user"):
         st.markdown(user_ques)
     
+    with st.spinner("🤖 Chờ một chút, tôi đang tìm kiếm thông tin..."):
+        ###### processing & preparing data
+        # search top_k & record time
+        start_time_similarity_search = time.time()    
+        top_k=similarity_search(user_ques)
+        end_time_similarity_search = time.time()
+        
+        # parsing top_k
+        page_content, metadata = parsing_top_k(top_k)
+        
+        # feed to gpt & record time
+        start_time_feed_ques2gpt = time.time()
+        assistant_response = feed_ques2gpt(user_ques, page_content)
+        end_time_feed_ques2gpt = time.time()
     
-    ###### processing & preparing data
-    # search top_k & record time
-    start_time_similarity_search = time.time()    
-    top_k=similarity_search(user_ques)
-    end_time_similarity_search = time.time()
-    
-    # parsing top_k
-    page_content, metadata = parsing_top_k(top_k)
-    
-    # feed to gpt & record time
-    start_time_feed_ques2gpt = time.time()
-    assistant_response = feed_ques2gpt(user_ques, page_content)
-    end_time_feed_ques2gpt = time.time()
-    
-    # saving to .log file
-    log_current = {
-        "user_ques": user_ques,
-        "top_k": top_k,
-        "assistant_response": assistant_response,
-        "metadata": metadata,
-        "similarity_search_time": end_time_similarity_search - start_time_similarity_search,
-        "feed_ques2gpt_time": end_time_feed_ques2gpt - start_time_feed_ques2gpt}
-    
-    logger.debug(str(log_current))
+        # saving to .log file
+        log_current = {
+            "user_ques": user_ques,
+            "top_k": top_k,
+            "assistant_response": assistant_response,
+            "metadata": metadata,
+            "similarity_search_time": end_time_similarity_search - start_time_similarity_search,
+            "feed_ques2gpt_time": end_time_feed_ques2gpt - start_time_feed_ques2gpt}
+        logger.debug(str(log_current))
     
     
     ##### Display assistant response 
