@@ -12,9 +12,13 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 from dotenv import load_dotenv
-import pandas as pd
 load_dotenv()
-import json
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    AIMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
 
 
 
@@ -30,49 +34,34 @@ docsearch = Pinecone.from_existing_index(index_name, embeddings) # this is the v
 query="Thời giờ làm việc của nhân viên ITL"
 # làm for loop, tinh similarity score trung binh
 
+
+
+
 # ================================seting up OpenAI================================
-prompt_template = """You are an expert about policies of ITL Corporation, I will ask you a question, and then provide you some chunks of text contain relevant information. 
+# setting up the model
+chat = ChatOpenAI(temperature=0)
+
+# settting up the prompt template
+system_template="""You are an expert about policies of ITL Corporation, I will ask you a question, and then provide you some chunks of text contain relevant information. 
 Try to extract information from the provided text & answer in Vietnamese. 
 You should answer straight to the point of the question, ignore irrelevant information, prefer bullet-points. 
 If the text does not contain relevant information, you should tell me that you don't have the answer.
-
+"""
+human_template="""
 Questions:
 {user_question}  
 
 Relevant Information:
 {relevant_info}
 """
+system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
+human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
 
-
-llm = OpenAI(temperature=0, max_tokens=1024, model="text-davinci-002")
-llm_chain = LLMChain(
-    llm=llm,
-    prompt=PromptTemplate.from_template(prompt_template)
-)
 
 
 
 # ================================defining neccessary functions================================
-def qa(user_question):
-    """_summary_
-    Query data from Pinecone database and then feed it to GPT using the prompt template
-    """
-    
-    # query data
-    top_k=docsearch.similarity_search_with_score(query=user_question, k=3)
-    page_content=[i[0].page_content for i in top_k]
-    metadata=[top_k[i][0].metadata for i in range(len(top_k))]
-
-    # feed to GPT
-    response = llm_chain(
-        {
-            'user_question': user_question,
-            'relevant_info': page_content
-        }
-    )
-    return response['text'], metadata
-
-
 def similarity_search(user_question):
     top_k=docsearch.similarity_search_with_score(query=user_question, k=3)
     return top_k    
@@ -83,25 +72,20 @@ def parsing_top_k(top_k):
     page_content=[i[0].page_content for i in top_k]
     metadata=[top_k[i][0].metadata for i in range(len(top_k))]
     meta_list = ["/".join(i.values()) for i in metadata]
-    
     return page_content, meta_list
 
+top_k = similarity_search("thời gian làm việc của nhân viên ITL")
+content, meta = parsing_top_k(top_k=top_k)
 
 def feed_ques2gpt(user_question, page_content):
     """feed the user_question & top_k result to GPT"""
     # feed to GPT
-    response = llm_chain(
-        {
-            'user_question': user_question,
-            'relevant_info': page_content
-        }
-    )
-    return response['text']
+    response=chat(chat_prompt.format_prompt(
+        user_question=user_question,
+        relevant_info="\n\n".join(page_content)
+    ).to_messages())
+    return response.content
 
-
-# top_k=similarity_search(user_question=user_question)
-# page_content, meta_list = parsing_top_k(top_k)
-# response = feed_ques2gpt(user_question, page_content)
 
 
 
@@ -112,15 +96,14 @@ import time
 from datetime import datetime
 from loguru import logger
 
-log_name = "file_log.log"
-logger.add(log_name)
-
-
+# setting up the .log file
 streamlit_start_time = time.time()
 dt = datetime.fromtimestamp(streamlit_start_time)
 formatted_time = dt.strftime("%Y%m%d-%Hh%Mm%Ss")
+log_name = f"../../data/raw/.log/file_log-{formatted_time}.log"
+logger.add(log_name)
 
-
+# title
 st.title("ITL Internal AI Assistant 🤖")
 
 # Writing the disclaimer
@@ -143,8 +126,7 @@ st.markdown("""
     <summary><strong><em>⚠️ Note:</em></strong></summary>
      <p style="padding-left: 16px">Câu trả lời của AI chỉ mang tính chất tương đối. Đối với thông tin quan trọng, người dùng cần kiểm tra các tài liệu được dẫn nguồn.</p>
 </details>
-""", unsafe_allow_html=True)
-# AI Assistant can make mistakes. Consider checking the provided source documents for important information.
+""", unsafe_allow_html=True) # AI Assistant can make mistakes. Consider checking the provided source documents for important information.
 
 
 # Initialize chat history
@@ -183,11 +165,6 @@ if not st.session_state.greeting_shown:
     st.session_state.messages = [{"role": "assistant", "content": full_response}]
 
 # -----React to user input-----
-# Initialize DataFrame to store data
-data = {"user_ques": [], "top_k": [], "assistant_response": [], "metadata": [], "similarity_search_time": [], "feed_ques2gpt_time": []}
-df = pd.DataFrame(data)
-
-
 if user_ques := st.chat_input("Ask questions about ITL's policies"):
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": user_ques})
@@ -211,16 +188,7 @@ if user_ques := st.chat_input("Ask questions about ITL's policies"):
     assistant_response = feed_ques2gpt(user_ques, page_content)
     end_time_feed_ques2gpt = time.time()
     
-    # # Save data to DataFrame
-    # df = df.append({
-    #     "user_ques": user_ques,
-    #     "top_k": top_k,
-    #     "assistant_response": assistant_response,
-    #     "metadata": metadata,
-    #     "similarity_search_time": end_time_similarity_search - start_time_similarity_search,
-    #     "feed_ques2gpt_time": end_time_feed_ques2gpt - start_time_feed_ques2gpt
-    # }, ignore_index=True)
-    
+    # saving to .log file
     log_current = {
         "user_ques": user_ques,
         "top_k": top_k,
@@ -235,8 +203,10 @@ if user_ques := st.chat_input("Ask questions about ITL's policies"):
     ##### Display assistant response 
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
-        full_response = ""
-        assistant_response = f"{assistant_response}\n\n**📌 Thông tin chi tiết, tham khảo:**\n\n*{metadata}*"
+        full_response = ""        
+        metadata = [f"*{i}*" for i in metadata] # adding "*" to format the markdown
+        meta_to_string="\n\n".join(metadata)
+        assistant_response = f"{assistant_response}\n\n**📌 Thông tin chi tiết, tham khảo:**\n\n{meta_to_string}"
         
         # Simulate stream of response with milliseconds delay
         for chunk in assistant_response.split(" "):
@@ -249,10 +219,3 @@ if user_ques := st.chat_input("Ask questions about ITL's policies"):
     # Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": full_response})
 
-# Save DataFrame to CSV when the app stops
-# if st.server.is_running:
-# if st.running:
-#     st.text("Streamlit app is still running. Stop the app to save data.")
-# else:
-#     df.to_csv(f"running-data{streamlit_start_time}.csv", index=False)
-#     st.text("Data saved to 'your_data.csv'.")
