@@ -9,6 +9,24 @@ load_dotenv("/Users/spinokiem/Documents/Spino_DS_prj/building_a_chatbot")
 
 # -------loading document-------
 nqld = pd.read_excel("../../data/interim/nqld.xlsx")
+nqld.text.str.len().mean()
+
+""" 
+trung bình một đoạn văn của mình là 400 kí tự quy đổi ra thành khoảng 100 token. 
+cứ cho là tiếng việt nhiều hơn thì sẽ là 150 tokens đi. 
+
+mỗi lần hỏi mình feed top_3 kết quả => 150 * 3 = 450 tokens
+
+cộng thêm với user_question & prompt_template khoảng 500 kí tự, quy ra thành hẳn 200 tokens đi.
+
+-> input của mình khoảng 650 tokens. 
+-> output của mình cho khoảng 400 tokens thì mới đúng 1k tokens. 
+
+nếu như vậy thì mình phải hỏi khoảng 1000 câu hỏi mới hết 1 đô. 
+mà sao tối qua em hỏi có mấy câu nó đã hết 1 đô rồi??? # 22/11/2022
+
+"""
+
 rename_dict = {
     'h1': 'heading 1',
     'h2': 'heading 2',
