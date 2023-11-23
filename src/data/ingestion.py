@@ -1,45 +1,35 @@
 import pandas as pd
 from langchain.document_loaders import DataFrameLoader
 from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.vectorstores import Pinecone
 import pinecone
 import os
 from dotenv import load_dotenv
 load_dotenv("/Users/spinokiem/Documents/Spino_DS_prj/building_a_chatbot")
 
 
+
+
 # -------loading document-------
-nqld = pd.read_excel("../../data/interim/nqld.xlsx")
-nqld.text.str.len().mean()
-
-""" 
-trung bình một đoạn văn của mình là 400 kí tự quy đổi ra thành khoảng 100 token. 
-cứ cho là tiếng việt nhiều hơn thì sẽ là 150 tokens đi. 
-
-mỗi lần hỏi mình feed top_3 kết quả => 150 * 3 = 450 tokens
-
-cộng thêm với user_question & prompt_template khoảng 500 kí tự, quy ra thành hẳn 200 tokens đi.
-
--> input của mình khoảng 650 tokens. 
--> output của mình cho khoảng 400 tokens thì mới đúng 1k tokens. 
-
-nếu như vậy thì mình phải hỏi khoảng 1000 câu hỏi mới hết 1 đô. 
-mà sao tối qua em hỏi có mấy câu nó đã hết 1 đô rồi??? # 22/11/2022
-
-"""
+# nqld = pd.read_excel("../../data/interim/nqld.xlsx")
+tuldtt = pd.read_excel("../../data/interim/tuldtt.xlsx")
+tuldtt.text.str.len().mean()
 
 rename_dict = {
     'h1': 'heading 1',
     'h2': 'heading 2',
     'h3': 'heading 3'
 }
-nqld.rename(columns=rename_dict, inplace=True)
-nqld.fillna("", inplace=True)
-nqld['document'] = 'HR.03.V3.2023. Nội quy Lao động'
+tuldtt.rename(columns=rename_dict, inplace=True)
+tuldtt.fillna("", inplace=True)
+# tuldtt['document'] = 'HR.03.V3.2023. Nội quy Lao động'
 
 # use DataFrameLoader of langchain to create a `langchain.schema.document.Document` object
-loader = DataFrameLoader(nqld)
+loader = DataFrameLoader(tuldtt)
 documents = loader.load()
 # type(documents[0])
+
+
 
 
 # -------setting up the embedder & vectordatabase-------
@@ -57,9 +47,17 @@ if index_name not in pinecone.list_indexes():
         dimension=1536
     )
 
-# -------testing-------
-# docsearch = Pinecone.from_documents(documents, embedder, index_name=index_name)
 
-# # pinecone.delete_index("itl-knl-base") # delete all
+# if you already have an index, you can load it using Langchain like this
+docsearch = Pinecone.from_existing_index(index_name, embedder)
+docsearch.add_documents(documents)
+# docsearch.__dir__()
+
+
+
+
+# -------testing-------
 # knl_base = pinecone.Index('itl-knl-base')
 # knl_base.describe_index_stats()
+
+# docsearch.similarity_search("quà mừng sinh nhật cho người lao động", k=3)
