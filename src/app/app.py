@@ -74,8 +74,9 @@ def parsing_top_k(top_k):
     meta_list = ["/".join(i.values()) for i in metadata]
     return page_content, meta_list
 
-top_k = similarity_search("thời gian làm việc của nhân viên ITL")
-content, meta = parsing_top_k(top_k=top_k)
+# top_k = similarity_search("thời gian làm việc của nhân viên ITL")
+# content, meta = parsing_top_k(top_k=top_k)
+# content[2].split("\n", 1)[1]
 
 def feed_ques2gpt(user_question, page_content):
     """feed the user_question & top_k result to GPT"""
@@ -150,9 +151,9 @@ if not st.session_state.greeting_shown:
         full_response = ""
         assistant_response = random.choice(
             [
-                "Hello there! I am ITL BOT, an Artificial Intelligent developed by ITL Corporation. How can I assist you today?",
-                "Hi, ITL-ers! Is there anything ITL BOT can help you with?",
-                "Hello! Do you have any question you want me to find answer for?",
+                "Xin chào! Tôi là ITL BOT, một trợ lí thông minh được phát triển bởi tập đoàn ITL. Tôi có thể hỗ trợ gì cho bạn?",
+                "Xin chào ITL-ers, bạn đang cần tôi tra cứu giúp tài liệu gì nào?",
+                "Chào bạn, có câu hỏi nào bạn đang cần tôi giải đáp không?",
             ]
         )
         for chunk in assistant_response.split():
@@ -205,7 +206,7 @@ if user_ques := st.chat_input("Ask questions about ITL's policies"):
         full_response = ""        
         metadata = [f"*{i}*" for i in metadata] # adding "*" to format the markdown
         meta_to_string="\n\n".join(metadata)
-        assistant_response = f"{assistant_response}\n\n**📌 Thông tin chi tiết, tham khảo:**\n\n{meta_to_string}"
+        assistant_response = f"{assistant_response}\n\n**📌 Thông tin chi tiết, tham khảo:**"#\n\n{meta_to_string}
         
         # Simulate stream of response with milliseconds delay
         for chunk in assistant_response.split(" "):
@@ -213,8 +214,23 @@ if user_ques := st.chat_input("Ask questions about ITL's policies"):
             time.sleep(0.05)
             # Add a blinking cursor to simulate typing
             message_placeholder.markdown(full_response + "▌")
+        full_response = full_response + "\n\n" + meta_to_string
         message_placeholder.markdown(full_response)
+        
 
+        # for meta, con in zip(metadata, page_content):
+        #     meta = meta + "\n"
+        #     con = con.split("\n")[1].replace("\n", "\n\n") # remove the unncessary heading & double the \n to print out newline in markdown
+        #     markdown = f"""
+        #     <details class="disclaimer">
+        #         <summary><strong><em>{meta}:</em></strong></summary>
+        #         <p style="padding-left: 16px">{con}</p>
+        #     </details>
+        #     """
+        #     st.markdown(markdown, unsafe_allow_html=True)
+        #     full_response = full_response + "\n\n" + markdown
+        # message_placeholder.markdown(full_response)
+        
     # Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": full_response})
 

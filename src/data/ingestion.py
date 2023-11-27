@@ -9,29 +9,6 @@ load_dotenv("/Users/spinokiem/Documents/Spino_DS_prj/building_a_chatbot")
 
 
 
-
-# -------loading document-------
-# nqld = pd.read_excel("../../data/interim/nqld.xlsx")
-tuldtt = pd.read_excel("../../data/interim/tuldtt.xlsx")
-tuldtt.text.str.len().mean()
-
-rename_dict = {
-    'h1': 'heading 1',
-    'h2': 'heading 2',
-    'h3': 'heading 3'
-}
-tuldtt.rename(columns=rename_dict, inplace=True)
-tuldtt.fillna("", inplace=True)
-# tuldtt['document'] = 'HR.03.V3.2023. Nội quy Lao động'
-
-# use DataFrameLoader of langchain to create a `langchain.schema.document.Document` object
-loader = DataFrameLoader(tuldtt)
-documents = loader.load()
-# type(documents[0])
-
-
-
-
 # -------setting up the embedder & vectordatabase-------
 embedder = OpenAIEmbeddings()
 pinecone.init(
@@ -48,16 +25,47 @@ if index_name not in pinecone.list_indexes():
     )
 
 
+
+# -------loading document-------
+policy = pd.read_excel("../../data/interim/nqld.xlsx")
+# policy = pd.read_excel("../../data/interim/tuldtt.xlsx")
+# policy = pd.read_excel("../../data/interim/healthcare.xlsx")
+policy.text.str.len().mean()
+
+rename_dict = {
+    'h1': 'heading 1',
+    'h2': 'heading 2',
+    'h3': 'heading 3'
+}
+policy.rename(columns=rename_dict, inplace=True)
+policy.fillna("", inplace=True)
+# tuldtt['document'] = 'HR.03.V3.2023. Nội quy Lao động'
+
+# use DataFrameLoader of langchain to create a `langchain.schema.document.Document` object
+loader = DataFrameLoader(policy)
+documents = loader.load()
+# type(documents[0])
+
+
+
+# -------embedding document-------
+
+# if this is the first time you create the index, you can create it from your langchain.document like this: 
+# docsearch = Pinecone.from_documents(documents, embedder, index_name=index_name)
+
 # if you already have an index, you can load it using Langchain like this
 docsearch = Pinecone.from_existing_index(index_name, embedder)
 docsearch.add_documents(documents)
-# docsearch.__dir__()
+
+
+# delete the index
+# pinecone.delete_index("itl-knl-base") # delete index
 
 
 
 
 # -------testing-------
-# knl_base = pinecone.Index('itl-knl-base')
-# knl_base.describe_index_stats()
+knl_base = pinecone.Index('itl-knl-base')
+knl_base.describe_index_stats()
 
 # docsearch.similarity_search("quà mừng sinh nhật cho người lao động", k=3)
