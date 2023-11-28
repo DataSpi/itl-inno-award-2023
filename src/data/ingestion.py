@@ -27,10 +27,12 @@ if index_name not in pinecone.list_indexes():
 
 
 # -------loading document-------
-policy = pd.read_excel("../../data/interim/nqld.xlsx")
+# policy = pd.read_excel("../../data/interim/nqld.xlsx")
 # policy = pd.read_excel("../../data/interim/tuldtt.xlsx")
 # policy = pd.read_excel("../../data/interim/healthcare.xlsx")
+policy = pd.read_excel("../../data/interim/quy-trinh-ki-hdld.xlsx")
 policy.text.str.len().mean()
+
 
 rename_dict = {
     'h1': 'heading 1',

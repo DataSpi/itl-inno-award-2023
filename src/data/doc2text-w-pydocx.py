@@ -7,12 +7,16 @@ import docx
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 
-file_path="../../data/raw/6. HR.03.V3.2023. Nội quy Lao động_Review by Labor Department - Final.DOCX"
-document_name = "HR.03.V3.2023. Nội quy Lao động"
+# file_path="../../data/raw/6. HR.03.V3.2023. Nội quy Lao động_Review by Labor Department - Final.DOCX"
+# document_name = "HR.03.V3.2023. Nội quy Lao động"
 # file_path="../../data/raw/10. HR.32.V4.2023. Thỏa ước Lao động tập thể-final.DOCX"
 # document_name = "HR.32.V4.2023. Thỏa ước Lao động tập thể"
 # file_path="../../data/interim/docx-edited/1. Healthcare Policy - V2 - final - VN.docx"
 # document_name = "PO-ITL-HR-012. Healthcare Policy"
+file_path="../../data/interim/docx-edited/7. HR.05.V7.2022. Quy trình Ký HĐLĐ-final.docx"
+document_name = "HR.05.V7.2022. Quy trình Ký HĐLĐ"
+
+
 policy=docx.Document(file_path)
 
 # store the paragraph objects into a dataframe for easily manipulation later. 
@@ -87,4 +91,5 @@ df3['document']=document_name
 # df3[['document', 'h1', 'h2', 'h3', 'text']].to_excel('../../data/interim/nqld.xlsx', index=False)
 # df3[['document', 'h1', 'h2', 'h3', 'text']].to_excel('../../data/interim/tuldtt.xlsx', index=False)
 # df3[['document', 'h1', 'h2', 'h3', 'text']].to_excel('../../data/interim/healthcare.xlsx', index=False)
+df3[['document', 'h1', 'h2', 'h3', 'text']].to_excel('../../data/interim/quy-trinh-ki-hdld.xlsx', index=False)
 
