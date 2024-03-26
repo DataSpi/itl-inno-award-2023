@@ -37,7 +37,7 @@ df.loc[h3_rows, 'h3'] = df.loc[h3_rows, 'text']
 
 
 # -----ffill() for fill down the data (rows that do not have data will be filled by the value of the row above it.)
-df.h1.ffill(inplace=True)
+df.h1.ffill(inplace=True) 
 df.h2=df.groupby('h1')['h2'].transform(lambda x: x.ffill())
 df.h3=df.groupby(['h1', 'h2'])['h3'].transform(lambda x: x.ffill())
 # df.head(50).style.background_gradient(subset='length') # see the df one more time. 

@@ -22,6 +22,15 @@ from langchain.prompts.chat import (
 
 
 
+
+doc_links = {
+    "HR.03.V3.2023. Nội quy Lao động": "https://itlvncom.sharepoint.com/:b:/r/sites/ITLCorp/CL/CLShareLimit/ITL%20SHARED%20POLICIES%20%26%20SOPS/2.%20HR/2.%20C%20%26%20B/1.%20HR.03.V3.2023.%20N%E1%BB%99i%20quy%20Lao%20%C4%91%E1%BB%99ng%20-%20Company%20Regulation/2023/HR.03.V3.2023.%20N%E1%BB%99i%20Quy%20Lao%20%C4%91%E1%BB%99ng%202023.pdf?csf=1&web=1&e=Fe8b88",
+    "HR.32.V4.2023. Thỏa ước Lao động tập thể": "https://itlvncom.sharepoint.com/:b:/r/sites/ITLCorp/CL/CLShareLimit/ITL%20SHARED%20POLICIES%20%26%20SOPS/2.%20HR/2.%20C%20%26%20B/5.%20HR.32.V4.2023.%20Th%E1%BB%8Fa%20%C6%B0%E1%BB%9Bc%20Lao%20%C4%91%E1%BB%99ng%20t%E1%BA%ADp%20th%E1%BB%83_Collective%20Agreenment/2023/HR.32.V4.2023.%20Th%E1%BB%8Fa%20%C6%B0%E1%BB%9Bc%20Lao%20%C4%91%E1%BB%99ng%20t%E1%BA%ADp%20th%E1%BB%83_Collective%20Agreenment.pdf?csf=1&web=1&e=9ujf0S",
+    "PO-ITL-HR-012. Healthcare Policy": "https://itlvncom.sharepoint.com/:b:/r/sites/ITLCorp/CL/CLShareLimit/ITL%20SHARED%20POLICIES%20%26%20SOPS/2.%20HR/2.%20C%20%26%20B/3.%20PO-ITL-HR-009.%20Ch%C3%ADnh%20s%C3%A1ch%20B%E1%BA%A3o%20hi%E1%BB%83m%20S%E1%BB%A9c%20kh%E1%BB%8Fe%20Tai%20n%E1%BA%A1n%20-%20Healthcare%20Insurance/V2/PO.ITL.HR.009.%20Ch%C3%ADnh%20s%C3%A1ch%20B%E1%BA%A3o%20hi%E1%BB%83m%20s%E1%BB%A9c%20kh%E1%BB%8Fe%20v%C3%A0%20Tai%20n%E1%BA%A1n%20-%20Healthcare%20policy%20-%20VNEN.pdf?csf=1&web=1&e=Akr1qe",
+    "HR.05.V7.2022. Quy trình Ký HĐLĐ": "https://itlvncom.sharepoint.com/:b:/r/sites/ITLCorp/CL/CLShareLimit/ITL%20SHARED%20POLICIES%20%26%20SOPS/2.%20HR/2.%20C%20%26%20B/9.%20HR.05.V7.2022.%20Quy%20tr%C3%ACnh%20K%C3%BD%20H%E1%BB%A3p%20%C4%91%E1%BB%93ng%20Lao%20%C4%91%E1%BB%99ng%20-%20Procedure%20of%20Labor%20Contract%20Signing/V7/HR.05.V7.2022.%20Quy%20tr%C3%ACnh%20k%C3%BD%20H%E1%BB%A3p%20%C4%91%E1%BB%93ng%20lao%20%C4%91%E1%BB%99ng%20-%20Procedure%20of%20Labor%20Contract%20Signing.pdf?csf=1&web=1&e=kSNtAt"
+}
+
+
 # ================================seting up pinecone================================
 pinecone.init(
     api_key=os.getenv("PINECONE_API_KEY"),
@@ -45,7 +54,11 @@ chat = ChatOpenAI(temperature=0)
 system_template="""You are an expert about policies of ITL Corporation, I will ask you a question, and then provide you some chunks of text contain relevant information. 
 Try to extract information from the provided text & answer in Vietnamese. 
 You should answer straight to the point of the question, ignore irrelevant information, prefer bullet-points. 
-If the text does not contain relevant information, you should tell me that you don't have the answer.
+
+Here are some instruction that you should follow: 
+- You should act only like an Information Retriever, please, avoid answering question requiring logical reasoning. 
+- If the provided text does not contain sufficient information for answering question, you should response that the information you have asscess to is not sufficient for answering the question, 
+- Please don't try to guess, don't try to answer using irrelevant information, keep your sunccint, concise, and straight to the point. 
 """
 human_template="""
 Questions:
@@ -75,8 +88,11 @@ def parsing_top_k(top_k):
     return page_content, meta_list
 
 # top_k = similarity_search("thời gian làm việc của nhân viên ITL")
+# top_k[0][0].metadata['document']
 # content, meta = parsing_top_k(top_k=top_k)
 # content[2].split("\n", 1)[1]
+# doc_names=[i.split("/")[0] for i in meta]
+# doc_links[doc_names[0]]
 
 def feed_ques2gpt(user_question, page_content):
     """feed the user_question & top_k result to GPT"""
@@ -204,9 +220,12 @@ if user_ques := st.chat_input("Ask questions about ITL's policies"):
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
         full_response = ""        
+        # doc_names=[i.split("/")[0] for i in metadata]
+        # links = [f"[Link]({doc_links[i]})" for i in doc_names]
         metadata = [f"*{i}*" for i in metadata] # adding "*" to format the markdown
+        
         meta_to_string="\n\n".join(metadata)
-        assistant_response = f"{assistant_response}\n\n**📌 Thông tin chi tiết, tham khảo:**"#\n\n{meta_to_string}
+        assistant_response = f"{assistant_response}\n\n**📌 Thông tin chi tiết, tham khảo:**"
         
         # Simulate stream of response with milliseconds delay
         for chunk in assistant_response.split(" "):
@@ -234,3 +253,7 @@ if user_ques := st.chat_input("Ask questions about ITL's policies"):
     # Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": full_response})
 
+
+
+
+# [link](https://itlvncom.sharepoint.com/:b:/r/sites/ITLCorp/CL/CLShareLimit/ITL%20SHARED%20POLICIES%20%26%20SOPS/2.%20HR/2.%20C%20%26%20B/1.%20HR.03.V3.2023.%20N%E1%BB%99i%20quy%20Lao%20%C4%91%E1%BB%99ng%20-%20Company%20Regulation/2023/HR.03.V3.2023.%20N%E1%BB%99i%20Quy%20Lao%20%C4%91%E1%BB%99ng%202023.pdf?csf=1&web=1&e=Fe8b88)
